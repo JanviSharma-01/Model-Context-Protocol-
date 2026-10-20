@@ -21,28 +21,32 @@ A production-grade, multi-tier agentic system engineered with a **Two-Stage LLM 
 
 ---
 
-## 📁 Repository Structure
+## 🏗️ System Architecture & Workflow
 
 ```text
-Model-Context-Protocol/
-│
-├── config.py                  # Environment variables & service configurations
-├── requirements.txt           # Project dependencies
-├── README.md                  # System documentation
-│
-├── src/                       # Application source code
-│   ├── __init__.py            # Root package initializer
-│   ├── main.py                # FastAPI endpoints & application routing
-│   ├── pipeline.py            # Two-Stage Agentic Pipeline logic
-│   ├── llm.py                 # LLM caller & offline fallback handlers
-│   ├── database.py             # DB Connection handlers
-│   └── tools/                 # Micro-tool registry
-│       ├── __init__.py        # Tool map registry
-│       ├── calc_tool.py       # Calculator module
-│       ├── finance_tool.py    # Financial data module
-│       ├── mysql_tool.py      # MySQL database interface
-│       ├── scraper_tool.py    # Web scraping engine
-│       ├── search_tool.py     # Fallback search interface
-│       └── weather_tool.py    # Weather information interface
-│
-└── tests/                     # Automated unit test suite
+┌─────────────────────────────────────────────────────────┐
+│                   User Request / Client                 │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                 FastAPI Routing Engine                  │
+│                    (src/main.py)                        │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│               Two-Stage Agentic Pipeline                │
+│                 (src/pipeline.py)                       │
+│  • Stage 1: Intent Parsing & Tool Selection             │
+│  • Stage 2: Tool Execution & Result Aggregation         │
+└───────────────┬─────────────────────────┬───────────────┘
+                │                         │
+                ▼                         ▼
+┌───────────────────────────────┐ ┌───────────────────────────────┐
+│      Micro-Tool Registry      │ │   LLM & Fallback Engine       │
+│        (src/tools/*)          │ │        (src/llm.py)           │
+│  • Financial & MySQL Query    │ │  • Online LLM API Call        │
+│  • Web Scraper & Search       │ │  • Offline Rule Fallback      │
+│  • Calculator & Weather       │ └───────────────────────────────┘
+└───────────────────────────────┘
